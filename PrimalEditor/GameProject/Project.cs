@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace PrimalEditor.GameProject
 {
@@ -23,7 +24,7 @@ namespace PrimalEditor.GameProject
         public string FullPath => $"{Path} {Name} {Extension}";
         [DataMember (Name = "Scenes")]
         private ObservableCollection<Scene> _scenes = new ObservableCollection<Scene>();
-        public ReadOnlyCollection<Scene> Scenes
+        public ReadOnlyObservableCollection<Scene> Scenes
         { get; private set; }
         private Scene _activeScene;
        
@@ -40,6 +41,20 @@ namespace PrimalEditor.GameProject
             }
         }
         public static Project Current => Application.Current.MainWindow.DataContext as Project;
+
+        public ICommand AddScene { get; private set; }
+        public ICommand RemoveScene { get; private set; }
+        private void AddSceneInternal(string sceneName)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(sceneName.Trim()));
+            _scenes.Add(new Scene(this, sceneName));
+
+        }
+        private void RemoveSceneInternal(Scene scene)
+        {
+            Debug.Assert(_scenes.Contains(scene));
+            _scenes.Remove(scene);  
+        }
         public static Project Load(string file)
         {
             Debug.Assert(File.Exists(file));
@@ -60,7 +75,7 @@ namespace PrimalEditor.GameProject
         {
             if(_scenes != null)
             {
-                Scenes = new ReadOnlyCollection<Scene>(_scenes);
+                Scenes = new ReadOnlyObservableCollection<Scene>(_scenes);
                 OnPropertyChanged(nameof(Scenes));
             }
             ActiveScene = Scenes.FirstOrDefault(x => x.IsActive);
@@ -69,6 +84,7 @@ namespace PrimalEditor.GameProject
         {
             Name = name;
             Path = path;
+
           OnDeserialized(new StreamingContext());
         }
 
