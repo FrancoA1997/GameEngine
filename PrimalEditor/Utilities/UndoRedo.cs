@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PrimalEditor.Utilities
 {
-    interface IUndoRedo
+    public interface IUndoRedo
     {
         string Name { get; }
         void Undo();
@@ -33,7 +33,8 @@ namespace PrimalEditor.Utilities
             _undoAction = undo;
             _redoAction = redo;
         }
-        class UndoRedo
+    }
+    public class UndoRedo
         {
             private ObservableCollection<IUndoRedo> _redoList = new ObservableCollection<IUndoRedo>();
             private ObservableCollection<IUndoRedo> _undoList = new ObservableCollection<IUndoRedo>();
@@ -77,5 +78,5 @@ namespace PrimalEditor.Utilities
                 UndoList = new ReadOnlyObservableCollection<IUndoRedo>(_undoList);
             }
         }
-    }
+    
 }
